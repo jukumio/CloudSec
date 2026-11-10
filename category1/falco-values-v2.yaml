@@ -1,0 +1,96 @@
+# Optional supplemental rules. Keep the original pbl_rules.yaml as the baseline.
+# Apply with Helm --reuse-values so both versions see the same experiments.
+# Fields: https://falco.org/docs/reference/rules/supported-fields/
+# Conditions: https://falco.org/docs/concepts/rules/conditions/
+#
+# Policy for this demo: HTTP workloads do not normally inspect credentials or
+# launch programs from writable temporary directories. A warning means this
+# policy was violated; it does not establish malicious intent or authorization.
+customRules:
+  pbl_rules_v2.yaml: |-
+    - list: pbl_v2_workload_containers
+      items: [frontend, backend, curl-client]
+
+    - list: pbl_v2_shell_programs
+      items: [sh, bash, dash, ash, ksh, zsh]
+
+    - macro: pbl_v2_workload
+      condition: >
+        container and k8s.ns.name = pbl-security and
+        container.name in (pbl_v2_workload_containers)
+
+    - rule: PBL V2 Sensitive File Open
+      desc: >
+        A demo workload successfully opened a sensitive file for reading.
+        This records read-capable open success, not proof that bytes were read.
+      condition: >
+        evt.type in (open, openat, openat2) and evt.rawres >= 0 and
+        evt.is_open_read = true and pbl_v2_workload and
+        (
+          fd.name in (/proc/1/environ, /etc/shadow, /root/.aws/credentials,
+                      /root/.ssh/id_rsa, /root/.kube/config) or
+          (
+            (fd.name startswith /var/run/secrets/kubernetes.io/serviceaccount/ or
+             fd.name startswith /run/secrets/kubernetes.io/serviceaccount/) and
+            fd.name endswith /token
+          )
+        )
+      output: >
+        PBL_V2_EVENT detection=sensitive_file_open
+        event_time_ns=%evt.rawtime event_type=%evt.type result=%evt.rawres
+        file=%fd.name process=%proc.name executable=%proc.exepath
+        command=%proc.cmdline pid=%proc.pid tid=%thread.tid ppid=%proc.ppid
+        parent=%proc.pname parent_command=%proc.pcmdline
+        container_id=%container.id container=%container.name
+        pod=%k8s.pod.name namespace=%k8s.ns.name
+      priority: Warning
+      tags: [pbl_v2, credential_access, file_access]
+
+    - rule: PBL V2 Temporary Program Execution
+      desc: >
+        A demo workload launched a binary from a temporary directory or a shell
+        whose argument string begins with an absolute temporary-script path.
+        Options before the script, relative paths, sourcing and inline scripts
+        are known gaps. An authorized temporary script can still trigger this.
+      condition: >
+        evt.type in (execve, execveat) and evt.rawres >= 0 and
+        pbl_v2_workload and
+        (
+          proc.exepath startswith /tmp/ or
+          proc.exepath startswith /var/tmp/ or
+          proc.exepath startswith /dev/shm/ or
+          (
+            proc.name in (pbl_v2_shell_programs) and
+            (proc.args startswith /tmp/ or
+             proc.args startswith /var/tmp/ or
+             proc.args startswith /dev/shm/)
+          )
+        )
+      output: >
+        PBL_V2_EVENT detection=temp_program_exec
+        event_time_ns=%evt.rawtime event_type=%evt.type result=%evt.rawres
+        process=%proc.name executable=%proc.exepath arguments=%proc.args
+        command=%proc.cmdline pid=%proc.pid tid=%thread.tid ppid=%proc.ppid
+        parent=%proc.pname parent_command=%proc.pcmdline
+        container_id=%container.id container=%container.name
+        pod=%k8s.pod.name namespace=%k8s.ns.name
+      priority: Warning
+      tags: [pbl_v2, execution, temporary_directory]
+
+    - rule: PBL V2 Environment Inspection
+      desc: >
+        Record environment inspection for context. The env command alone is
+        also normal troubleshooting and is not classified as an attack warning.
+      condition: >
+        evt.type in (execve, execveat) and evt.rawres >= 0 and
+        pbl_v2_workload and proc.name = env
+      output: >
+        PBL_V2_EVENT detection=environment_inspection
+        event_time_ns=%evt.rawtime event_type=%evt.type result=%evt.rawres
+        process=%proc.name executable=%proc.exepath command=%proc.cmdline
+        pid=%proc.pid tid=%thread.tid ppid=%proc.ppid
+        parent=%proc.pname parent_command=%proc.pcmdline
+        container_id=%container.id container=%container.name
+        pod=%k8s.pod.name namespace=%k8s.ns.name
+      priority: Informational
+      tags: [pbl_v2, context, environment]
