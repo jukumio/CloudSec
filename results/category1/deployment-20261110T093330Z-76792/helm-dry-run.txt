@@ -1,0 +1,712 @@
+Release "falco" has been upgraded. Happy Helming!
+NAME: falco
+LAST DEPLOYED: Tue Nov 10 18:33:32 2026
+NAMESPACE: falco
+STATUS: pending-upgrade
+REVISION: 2
+TEST SUITE: None
+HOOKS:
+MANIFEST:
+---
+# Source: falco/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: falco
+  namespace: falco
+  labels:
+    helm.sh/chart: falco-9.2.2
+    app.kubernetes.io/name: falco
+    app.kubernetes.io/instance: falco
+    app.kubernetes.io/version: "0.45.2"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: falco/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: falco
+  namespace: falco
+  labels:
+    helm.sh/chart: falco-9.2.2
+    app.kubernetes.io/name: falco
+    app.kubernetes.io/instance: falco
+    app.kubernetes.io/version: "0.45.2"
+    app.kubernetes.io/managed-by: Helm
+data:
+  falco.yaml: |-
+    append_output:
+    - suggested_output: true
+    base_syscalls:
+      all: false
+      custom_set: []
+      repair: false
+    buffer_format_base64: false
+    buffered_outputs: false
+    capture:
+      default_duration: 5000
+      enabled: false
+      mode: rules
+      path_prefix: /tmp/falco
+    config_files:
+    - /etc/falco/config.d
+    engine:
+      kind: modern_ebpf
+      kmod:
+        buf_size_preset: 4
+        drop_failed_exit: false
+      modern_ebpf:
+        buf_size_preset: 4
+        cpus_for_each_buffer: 2
+        disable_iterators: false
+        drop_failed_exit: false
+    falco_libs:
+      snaplen: 80
+      thread_table_auto_purging_interval_s: 300
+      thread_table_auto_purging_thread_timeout_s: 300
+      thread_table_size: 262144
+    file_output:
+      enabled: false
+      filename: ./events.txt
+      keep_alive: false
+    http_output:
+      ca_bundle: ""
+      ca_cert: ""
+      ca_path: /etc/falco/certs/
+      client_cert: /etc/falco/certs/client/client.crt
+      client_key: /etc/falco/certs/client/client.key
+      compress_uploads: false
+      echo: false
+      enabled: false
+      insecure: false
+      keep_alive: false
+      max_consecutive_timeouts: 5
+      mtls: false
+      url: ""
+      user_agent: falcosecurity/falco
+    json_include_message_property: false
+    json_include_output_fields_property: true
+    json_include_output_property: true
+    json_include_tags_property: true
+    json_output: true
+    libs_logger:
+      enabled: true
+      severity: info
+    load_plugins:
+    - container
+    log_level: info
+    log_stderr: true
+    log_syslog: true
+    output_timeout: 2000
+    outputs_queue:
+      capacity: 0
+    plugins:
+    - init_config:
+        engines:
+          bpm:
+            enabled: true
+          containerd:
+            enabled: true
+            sockets:
+            - /run/host-containerd/containerd.sock
+          cri:
+            enabled: true
+            sockets:
+            - /run/containerd/containerd.sock
+            - /run/crio/crio.sock
+            - /run/k3s/containerd/containerd.sock
+            - /run/host-containerd/containerd.sock
+          docker:
+            enabled: true
+            sockets:
+            - /var/run/docker.sock
+          libvirt_lxc:
+            enabled: true
+          lxc:
+            enabled: true
+          podman:
+            enabled: true
+            sockets:
+            - /run/podman/podman.sock
+        hooks:
+        - create
+        label_max_len: 100
+        with_size: false
+      library_path: libcontainer.so
+      name: container
+    plugins_hostinfo: true
+    priority: debug
+    program_output:
+      enabled: false
+      keep_alive: false
+      program: 'jq ''{text: .output}'' | curl -d @- -X POST https://hooks.slack.com/services/XXX'
+    rule_matching: all
+    rules_files:
+    - /etc/falco/falco_rules.yaml
+    - /etc/falco/falco_rules.local.yaml
+    - /etc/falco/rules.d
+    stdout_output:
+      enabled: true
+    syscall_event_drops:
+      actions:
+      - log
+      - alert
+      max_burst: 1
+      rate: 0.03333
+      simulate_drops: false
+      threshold: 0.1
+    syscall_event_timeouts:
+      max_consecutives: 1000
+    syslog_output:
+      enabled: true
+    time_format_iso_8601: false
+    watch_config_files: true
+    webserver:
+      enabled: true
+      k8s_healthz_endpoint: /healthz
+      listen_address: 0.0.0.0
+      listen_port: 8765
+      prometheus_metrics_enabled: false
+      ssl_certificate: /etc/falco/falco.pem
+      ssl_enabled: false
+      threadiness: 0
+---
+# Source: falco/templates/falcoctl-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: falco-falcoctl
+  namespace: falco
+  labels:
+    helm.sh/chart: falco-9.2.2
+    app.kubernetes.io/name: falco
+    app.kubernetes.io/instance: falco
+    app.kubernetes.io/version: "0.45.2"
+    app.kubernetes.io/managed-by: Helm
+data:
+  falcoctl.yaml: |-
+    artifact:
+      allowedTypes:
+      - rulesfile
+      - plugin
+      follow:
+        every: 168h
+        falcoversions: http://localhost:8765/versions
+        pluginsDir: /plugins
+        refs:
+        - falco-rules:5
+        rulesfilesDir: /rulesfiles
+        stateDir: /artifactstate
+      install:
+        pluginsDir: /plugins
+        refs:
+        - falco-rules:5
+        - ghcr.io/falcosecurity/plugins/plugin/container:0.7.6
+        resolveDeps: true
+        rulesfilesDir: /rulesfiles
+        stateDir: /artifactstate
+    indexes:
+    - name: falcosecurity
+      url: https://falcosecurity.github.io/falcoctl/index.yaml
+---
+# Source: falco/templates/rules-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: falco-rules
+  namespace: falco
+  labels:
+    helm.sh/chart: falco-9.2.2
+    app.kubernetes.io/name: falco
+    app.kubernetes.io/instance: falco
+    app.kubernetes.io/version: "0.45.2"
+    app.kubernetes.io/managed-by: Helm
+data:
+  pbl_rules.yaml: |-
+    - rule: PBL Normal Configuration Read
+      desc: Expected application configuration read
+      condition: >
+        container and evt.type in (open, openat, openat2) and
+        proc.name = cat and fd.name in (/etc/hostname, /www/index.html) and
+        container.name = frontend
+      output: >
+        PBL_EVENT scenario=normal case=openmetadata action=config_read
+        file=%fd.name process=%proc.name command=%proc.cmdline
+        container=%container.name pod=%k8s.pod.name namespace=%k8s.ns.name
+      priority: Informational
+      tags: [pbl, normal, openmetadata]
+    
+    - rule: PBL Normal Temporary File Activity
+      desc: Expected temporary file write by an administrator
+      condition: >
+        container and evt.type in (open, openat, openat2) and
+        evt.is_open_write=true and fd.name startswith /tmp/openmetadata-normal and
+        container.name = frontend
+      output: >
+        PBL_EVENT scenario=normal case=openmetadata action=temp_file_write
+        file=%fd.name process=%proc.name command=%proc.cmdline
+        container=%container.name pod=%k8s.pod.name namespace=%k8s.ns.name
+      priority: Informational
+      tags: [pbl, normal, openmetadata]
+    
+    - rule: PBL Normal Curl Health Check
+      desc: Expected curl health check from the frontend Pod
+      condition: >
+        container and evt.type in (open, openat, openat2) and
+        evt.is_open_write=true and
+        fd.name = /tmp/openmetadata-health-response
+      output: >
+        PBL_EVENT scenario=normal case=openmetadata action=health_check
+        file=%fd.name process=%proc.name command=%proc.cmdline
+        container=%container.name pod=%k8s.pod.name namespace=%k8s.ns.name
+      priority: Informational
+      tags: [pbl, normal, openmetadata]
+    
+    - rule: PBL OpenMetadata Environment Discovery
+      desc: Environment and credential discovery after a simulated OpenMetadata compromise
+      condition: >
+        container and spawned_process and
+        (proc.name = env or (proc.name = cat and proc.args contains /proc/1/environ)) and
+        container.name = backend
+      output: >
+        PBL_EVENT scenario=abnormal_1 case=openmetadata action=credential_environment_discovery
+        file=<NA> process=%proc.name command=%proc.cmdline
+        container=%container.name pod=%k8s.pod.name namespace=%k8s.ns.name
+      priority: Warning
+      tags: [pbl, abnormal, openmetadata, discovery]
+    
+    - rule: PBL OpenMetadata ServiceAccount Token Access
+      desc: ServiceAccount token access after a simulated OpenMetadata compromise
+      condition: >
+        container and evt.type in (open, openat, openat2) and
+        proc.name = cat and fd.name contains kubernetes.io/serviceaccount and
+        fd.name endswith token and container.name = backend
+      output: >
+        PBL_EVENT scenario=abnormal_2 case=openmetadata action=serviceaccount_token_read
+        file=%fd.name process=%proc.name command=%proc.cmdline
+        container=%container.name pod=%k8s.pod.name namespace=%k8s.ns.name
+      priority: Warning
+      tags: [pbl, abnormal, openmetadata, credential_access]
+    
+    - rule: PBL OpenMetadata Payload Execution
+      desc: Safe local payload execution that represents shell or payload execution
+      condition: >
+        container and spawned_process and proc.name = sh and
+        proc.args contains /tmp/openmetadata-payload.sh and
+        container.name = frontend
+      output: >
+        PBL_EVENT scenario=abnormal_3 case=openmetadata action=payload_shell_exec
+        file=/tmp/openmetadata-payload.sh process=%proc.name command=%proc.cmdline
+        container=%container.name pod=%k8s.pod.name namespace=%k8s.ns.name
+      priority: Warning
+      tags: [pbl, abnormal, openmetadata, execution]
+  pbl_rules_v2.yaml: |-
+    - list: pbl_v2_workload_containers
+      items: [frontend, backend, curl-client]
+    
+    - list: pbl_v2_shell_programs
+      items: [sh, bash, dash, ash, ksh, zsh]
+    
+    - macro: pbl_v2_workload
+      condition: >
+        container and k8s.ns.name = pbl-security and
+        container.name in (pbl_v2_workload_containers)
+    
+    - rule: PBL V2 Sensitive File Open
+      desc: >
+        A demo workload successfully opened a sensitive file for reading.
+        This records read-capable open success, not proof that bytes were read.
+      condition: >
+        evt.type in (open, openat, openat2) and evt.rawres >= 0 and
+        evt.is_open_read = true and pbl_v2_workload and
+        (
+          fd.name in (/proc/1/environ, /etc/shadow, /root/.aws/credentials,
+                      /root/.ssh/id_rsa, /root/.kube/config) or
+          (
+            (fd.name startswith /var/run/secrets/kubernetes.io/serviceaccount/ or
+             fd.name startswith /run/secrets/kubernetes.io/serviceaccount/) and
+            fd.name endswith /token
+          )
+        )
+      output: >
+        PBL_V2_EVENT detection=sensitive_file_open
+        event_time_ns=%evt.rawtime event_type=%evt.type result=%evt.rawres
+        file=%fd.name process=%proc.name executable=%proc.exepath
+        command=%proc.cmdline pid=%proc.pid tid=%thread.tid ppid=%proc.ppid
+        parent=%proc.pname parent_command=%proc.pcmdline
+        container_id=%container.id container=%container.name
+        pod=%k8s.pod.name namespace=%k8s.ns.name
+      priority: Warning
+      tags: [pbl_v2, credential_access, file_access]
+    
+    - rule: PBL V2 Temporary Program Execution
+      desc: >
+        A demo workload launched a binary from a temporary directory or a shell
+        whose argument string begins with an absolute temporary-script path.
+        Options before the script, relative paths, sourcing and inline scripts
+        are known gaps. An authorized temporary script can still trigger this.
+      condition: >
+        evt.type in (execve, execveat) and evt.rawres >= 0 and
+        pbl_v2_workload and
+        (
+          proc.exepath startswith /tmp/ or
+          proc.exepath startswith /var/tmp/ or
+          proc.exepath startswith /dev/shm/ or
+          (
+            proc.name in (pbl_v2_shell_programs) and
+            (proc.args startswith /tmp/ or
+             proc.args startswith /var/tmp/ or
+             proc.args startswith /dev/shm/)
+          )
+        )
+      output: >
+        PBL_V2_EVENT detection=temp_program_exec
+        event_time_ns=%evt.rawtime event_type=%evt.type result=%evt.rawres
+        process=%proc.name executable=%proc.exepath arguments=%proc.args
+        command=%proc.cmdline pid=%proc.pid tid=%thread.tid ppid=%proc.ppid
+        parent=%proc.pname parent_command=%proc.pcmdline
+        container_id=%container.id container=%container.name
+        pod=%k8s.pod.name namespace=%k8s.ns.name
+      priority: Warning
+      tags: [pbl_v2, execution, temporary_directory]
+    
+    - rule: PBL V2 Environment Inspection
+      desc: >
+        Record environment inspection for context. The env command alone is
+        also normal troubleshooting and is not classified as an attack warning.
+      condition: >
+        evt.type in (execve, execveat) and evt.rawres >= 0 and
+        pbl_v2_workload and proc.name = env
+      output: >
+        PBL_V2_EVENT detection=environment_inspection
+        event_time_ns=%evt.rawtime event_type=%evt.type result=%evt.rawres
+        process=%proc.name executable=%proc.exepath command=%proc.cmdline
+        pid=%proc.pid tid=%thread.tid ppid=%proc.ppid
+        parent=%proc.pname parent_command=%proc.pcmdline
+        container_id=%container.id container=%container.name
+        pod=%k8s.pod.name namespace=%k8s.ns.name
+      priority: Informational
+      tags: [pbl_v2, context, environment]
+---
+# Source: falco/templates/role.yaml
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: falco
+  namespace: falco
+  labels:
+    helm.sh/chart: falco-9.2.2
+    app.kubernetes.io/name: falco
+    app.kubernetes.io/instance: falco
+    app.kubernetes.io/version: "0.45.2"
+    app.kubernetes.io/managed-by: Helm
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - get
+      - list
+      - update
+---
+# Source: falco/templates/roleBinding.yaml
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: falco
+  namespace: falco
+  labels:
+    helm.sh/chart: falco-9.2.2
+    app.kubernetes.io/name: falco
+    app.kubernetes.io/instance: falco
+    app.kubernetes.io/version: "0.45.2"
+    app.kubernetes.io/managed-by: Helm
+subjects:
+  - kind: ServiceAccount
+    name: falco
+    namespace: falco
+roleRef:
+  kind: Role
+  name: falco
+  apiGroup: rbac.authorization.k8s.io
+---
+# Source: falco/templates/daemonset.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: falco
+  namespace: falco
+  labels:
+    helm.sh/chart: falco-9.2.2
+    app.kubernetes.io/name: falco
+    app.kubernetes.io/instance: falco
+    app.kubernetes.io/version: "0.45.2"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: falco
+      app.kubernetes.io/instance: falco
+  template:
+    metadata:
+      name: falco
+      labels:
+        app.kubernetes.io/name: falco
+        app.kubernetes.io/instance: falco
+      annotations:
+        checksum/config: f801e1fff05c4d7fcfe665652080ff786068fc7205afe8da8f653f55205d725e
+        checksum/rules: c0884058f6089368d05a40dbf870b4fc21bad47d02e6393d9fa3c1a5579560ed
+        checksum/certs: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    spec:
+      serviceAccountName: falco
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+      containers:
+        - name: falco
+          image: docker.io/falcosecurity/falco:0.45.2
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 1024Mi
+            requests:
+              cpu: 100m
+              memory: 512Mi
+          securityContext:
+            privileged: true
+          args:
+            - /usr/bin/falco        
+          env:
+            - name: HOST_ROOT
+              value: /host
+            - name: FALCO_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: FALCO_K8S_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          tty: true
+          ports:
+            - containerPort: 8765
+              name: web
+              protocol: TCP
+          startupProbe:
+            initialDelaySeconds: 3
+            timeoutSeconds: 5
+            periodSeconds: 5
+            failureThreshold: 20
+            httpGet:
+              path: /healthz
+              port: 8765
+          livenessProbe:
+            initialDelaySeconds: 0
+            timeoutSeconds: 5
+            periodSeconds: 15
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 8765
+          readinessProbe:
+            initialDelaySeconds: 0
+            timeoutSeconds: 5
+            periodSeconds: 15
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 8765
+          volumeMounts:
+            - mountPath: /host/var/run
+              name: container-engine-socket-0
+            - mountPath: /host/run/podman
+              name: container-engine-socket-1
+            - mountPath: /host/run/host-containerd
+              name: container-engine-socket-2
+            - mountPath: /host/run/containerd
+              name: container-engine-socket-3
+            - mountPath: /host/run/crio
+              name: container-engine-socket-4
+            - mountPath: /host/run/k3s/containerd
+              name: container-engine-socket-5
+            - mountPath: /etc/falco
+              name: rulesfiles-install-dir
+            - mountPath: /usr/share/falco/plugins
+              name: plugins-install-dir
+            - mountPath: /etc/falco/config.d
+              name: specialized-falco-configs
+            - mountPath: /root/.falco
+              name: root-falco-fs
+            - mountPath: /host/proc
+              name: proc-fs
+            - mountPath: /host/etc
+              name: etc-fs
+              readOnly: true
+            - mountPath: /host/dev
+              name: dev-fs
+              readOnly: true
+            - name: sys-module-fs
+              mountPath: /sys/module
+            - mountPath: /sys/kernel
+              name: sys-fs
+              readOnly: true
+            - mountPath: /etc/falco/falco.yaml
+              name: falco-yaml
+              subPath: falco.yaml
+            - mountPath: /etc/falco/rules.d
+              name: rules-volume
+        - name: falcoctl-artifact-follow
+          image: docker.io/falcosecurity/falcoctl:0.14.3
+          imagePullPolicy: IfNotPresent
+          args:
+            - artifact
+            - follow
+            - --log-format=json
+          securityContext:
+          volumeMounts:
+            - mountPath: /plugins
+              name: plugins-install-dir
+            - mountPath: /rulesfiles
+              name: rulesfiles-install-dir
+            - mountPath: /etc/falcoctl
+              name: falcoctl-config-volume
+            - mountPath: /artifactstate
+              name: artifact-state-dir
+      initContainers:
+        - name: falco-driver-loader
+          image: docker.io/falcosecurity/falco-driver-loader:0.45.2
+          imagePullPolicy: IfNotPresent
+          args:
+            - auto
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /root/.falco
+              name: root-falco-fs
+            - mountPath: /host/proc
+              name: proc-fs
+              readOnly: true
+            - mountPath: /host/boot
+              name: boot-fs
+              readOnly: true
+            - mountPath: /host/lib/modules
+              name: lib-modules
+            - mountPath: /host/usr
+              name: usr-fs
+              readOnly: true
+            - mountPath: /host/etc
+              name: etc-fs
+              readOnly: true
+            - mountPath: /etc/falco/config.d
+              name: specialized-falco-configs
+          env:
+            - name: HOST_ROOT
+              value: /host
+            - name: FALCOCTL_DRIVER_CONFIG_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: FALCOCTL_DRIVER_CONFIG_CONFIGMAP
+              value: falco
+        - name: falcoctl-artifact-install
+          image: docker.io/falcosecurity/falcoctl:0.14.3
+          imagePullPolicy: IfNotPresent
+          args:
+            - artifact
+            - install
+            - --log-format=json
+          securityContext:
+          volumeMounts:
+            - mountPath: /plugins
+              name: plugins-install-dir
+            - mountPath: /rulesfiles
+              name: rulesfiles-install-dir
+            - mountPath: /etc/falcoctl
+              name: falcoctl-config-volume
+            - mountPath: /artifactstate
+              name: artifact-state-dir
+      volumes:
+        - hostPath:
+            path: /var/run
+          name: container-engine-socket-0
+        - hostPath:
+            path: /run/podman
+          name: container-engine-socket-1
+        - hostPath:
+            path: /run/host-containerd
+          name: container-engine-socket-2
+        - hostPath:
+            path: /run/containerd
+          name: container-engine-socket-3
+        - hostPath:
+            path: /run/crio
+          name: container-engine-socket-4
+        - hostPath:
+            path: /run/k3s/containerd
+          name: container-engine-socket-5
+        - name: specialized-falco-configs
+          emptyDir: {}
+        - name: plugins-install-dir
+          emptyDir: {}
+        - name: rulesfiles-install-dir
+          emptyDir: {}
+        - name: artifact-state-dir
+          emptyDir: {}
+        - name: root-falco-fs
+          emptyDir: {}  
+        - name: boot-fs
+          hostPath:
+            path: /boot
+        - name: lib-modules
+          hostPath:
+            path: /lib/modules
+        - name: usr-fs
+          hostPath:
+            path: /usr
+        - name: etc-fs
+          hostPath:
+            path: /etc
+        - name: dev-fs
+          hostPath:
+            path: /dev
+        - name: sys-module-fs
+          hostPath:
+            path: /sys/module
+        - name: sys-fs
+          hostPath:
+            path: /sys/kernel
+        - name: proc-fs
+          hostPath:
+            path: /proc
+        - name: falcoctl-config-volume
+          configMap:
+            name: falco-falcoctl
+            items:
+              - key: falcoctl.yaml
+                path: falcoctl.yaml
+        - name: falco-yaml
+          configMap:
+            name: falco
+            items:
+            - key: falco.yaml
+              path: falco.yaml
+        - name: rules-volume
+          configMap:
+            name: falco-rules
+  updateStrategy:
+    type: RollingUpdate
+
+NOTES:
+Falco agents are spinning up on each node in your cluster. After a few
+seconds, they are going to start monitoring your containers looking for
+security issues.
+
+TIP:
+You can easily forward Falco events to Slack, Kafka, AWS Lambda and more with falcosidekick.
+Full list of outputs: https://github.com/falcosecurity/charts/tree/master/charts/falcosidekick.
+You can enable its deployment with `--set falcosidekick.enabled=true` or in your values.yaml.
+See: https://github.com/falcosecurity/charts/blob/master/charts/falcosidekick/values.yaml for configuration values.

@@ -1,0 +1,23 @@
+{
+  "frontend": {
+    "pod": "frontend-8686cd79f6-5qw4w",
+    "container": "frontend",
+    "pod_uid": "fc45dea3-6a18-4bd2-a03c-ed3c63701c10",
+    "restart_count": 0,
+    "container_id": "89e42b50817b971340b61919d2104165a9bf9f81946ef4393b9a5bb211ee3bf1"
+  },
+  "curl-client": {
+    "pod": "frontend-8686cd79f6-5qw4w",
+    "container": "curl-client",
+    "pod_uid": "fc45dea3-6a18-4bd2-a03c-ed3c63701c10",
+    "restart_count": 0,
+    "container_id": "a2ae1cd0f8a589650ce2b0a39446dbffaa5997cd66d2ee4ae0f713d83eb5d569"
+  },
+  "backend": {
+    "pod": "backend-675ff9dbd8-vh4sm",
+    "container": "backend",
+    "pod_uid": "63db7a31-c8b1-45fe-bf3c-fa4bf40404b4",
+    "restart_count": 0,
+    "container_id": "0ab08a11ddcbc85f53f9488365b301507b248845ae1ad710be33c691b66817b5"
+  }
+}

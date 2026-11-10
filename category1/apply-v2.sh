@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# WSL non-login shells do not always inherit snap's command directory.
+export PATH="${PATH}:/snap/bin"
+
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 EXPECTED_CONTEXT="${EXPECTED_CONTEXT:-kind-pbl-security}"
 CURRENT_CONTEXT="$(kubectl config current-context)"

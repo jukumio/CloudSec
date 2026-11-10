@@ -1,0 +1,22 @@
+{
+    "captured_after_run":  true,
+    "description":  "Source snapshots copied after the completed evaluation; active-helm-values.json records the rules deployed during the run.",
+    "files":  [
+                  {
+                      "file":  "evaluate.sh",
+                      "sha256":  "4778b6a003267b56d00bdcbb2ebadc321becaff51bf16aac3596545c4f64c6ea"
+                  },
+                  {
+                      "file":  "analyze_results.py",
+                      "sha256":  "2f1a25f5466e42dd2b88fa9ff5b3e1374f3d51ac4ba2c37b24458602a0140649"
+                  },
+                  {
+                      "file":  "falco-values.yaml",
+                      "sha256":  "911298778619a13a615ec51e50a6fa6641495a25a8364bdfa5361028002dfd9b"
+                  },
+                  {
+                      "file":  "falco-values-v2.yaml",
+                      "sha256":  "57deceaa243d1a21ac554e22f70a5db7613437fa3dfaefa3430a3182491e76f2"
+                  }
+              ]
+}

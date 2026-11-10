@@ -1,0 +1,630 @@
+{
+  "schema_version": 1,
+  "run": {
+    "schema_version": 1,
+    "namespace": "pbl-security",
+    "start_ns": 1794303839308062454,
+    "end_ns": 1794303857939984741,
+    "log_collection_complete": true,
+    "settle_seconds": 5,
+    "event_drop_metrics_checked": false,
+    "ground_truth_source": "controlled test-case intent"
+  },
+  "checks": {
+    "stable_falco_pods": true,
+    "all_desired_agents_ready": true,
+    "all_logs_collected": true,
+    "stable_workload_containers": true,
+    "event_drop_metrics_checked": false
+  },
+  "configured": {
+    "baseline": true,
+    "v2": true
+  },
+  "observed": {
+    "baseline": true,
+    "v2": true
+  },
+  "available": {
+    "baseline": true,
+    "v2": true
+  },
+  "raw_event_count": 217,
+  "non_event_lines": 0,
+  "warnings": [
+    "Syscall event-drop counters were not measured; absent alerts are observed non-matches.",
+    "Ground truth is test-author intent, not automatically inferred maliciousness."
+  ],
+  "metrics": {
+    "baseline": {
+      "TP": 4,
+      "TN": 4,
+      "FP": 3,
+      "FN": 4,
+      "evaluated_cases": 15,
+      "excluded_cases": 0,
+      "precision": 0.5714285714285714,
+      "recall": 0.5,
+      "false_positive_rate": 0.42857142857142855
+    },
+    "v2": {
+      "TP": 6,
+      "TN": 5,
+      "FP": 2,
+      "FN": 2,
+      "evaluated_cases": 15,
+      "excluded_cases": 0,
+      "precision": 0.75,
+      "recall": 0.75,
+      "false_positive_rate": 0.2857142857142857
+    }
+  },
+  "cases": [
+    {
+      "case_id": "N01",
+      "ground_truth": "benign",
+      "description": "Routine configuration reads",
+      "expected_baseline": "TN",
+      "expected_v2": "TN",
+      "start_ns": 1794303839312250069,
+      "end_ns": 1794303839528342557,
+      "exit_code": 0,
+      "pod": "frontend-8686cd79f6-5qw4w",
+      "container": "frontend",
+      "pod_uid": "fc45dea3-6a18-4bd2-a03c-ed3c63701c10",
+      "restart_count": 0,
+      "container_id": "89e42b50817b971340b61919d2104165a9bf9f81946ef4393b9a5bb211ee3bf1",
+      "baseline": {
+        "classification": "TN",
+        "raw_events": 2,
+        "raw_alerts": 0,
+        "rules": [
+          "PBL Normal Configuration Read"
+        ],
+        "alert_rules": []
+      },
+      "v2": {
+        "classification": "TN",
+        "raw_events": 0,
+        "raw_alerts": 0,
+        "rules": [],
+        "alert_rules": []
+      },
+      "default_alerts": {
+        "raw_alerts": 0,
+        "rules": []
+      }
+    },
+    {
+      "case_id": "N02",
+      "ground_truth": "benign",
+      "description": "Routine temporary text file operations",
+      "expected_baseline": "TN",
+      "expected_v2": "TN",
+      "start_ns": 1794303840555462118,
+      "end_ns": 1794303840774683425,
+      "exit_code": 0,
+      "pod": "frontend-8686cd79f6-5qw4w",
+      "container": "frontend",
+      "pod_uid": "fc45dea3-6a18-4bd2-a03c-ed3c63701c10",
+      "restart_count": 0,
+      "container_id": "89e42b50817b971340b61919d2104165a9bf9f81946ef4393b9a5bb211ee3bf1",
+      "baseline": {
+        "classification": "TN",
+        "raw_events": 2,
+        "raw_alerts": 0,
+        "rules": [
+          "PBL Normal Temporary File Activity"
+        ],
+        "alert_rules": []
+      },
+      "v2": {
+        "classification": "TN",
+        "raw_events": 0,
+        "raw_alerts": 0,
+        "rules": [],
+        "alert_rules": []
+      },
+      "default_alerts": {
+        "raw_alerts": 0,
+        "rules": []
+      }
+    },
+    {
+      "case_id": "N03",
+      "ground_truth": "benign",
+      "description": "Loopback HTTP health check",
+      "expected_baseline": "TN",
+      "expected_v2": "TN",
+      "start_ns": 1794303841801786578,
+      "end_ns": 1794303842039143775,
+      "exit_code": 0,
+      "pod": "frontend-8686cd79f6-5qw4w",
+      "container": "curl-client",
+      "pod_uid": "fc45dea3-6a18-4bd2-a03c-ed3c63701c10",
+      "restart_count": 0,
+      "container_id": "a2ae1cd0f8a589650ce2b0a39446dbffaa5997cd66d2ee4ae0f713d83eb5d569",
+      "baseline": {
+        "classification": "TN",
+        "raw_events": 3,
+        "raw_alerts": 0,
+        "rules": [
+          "PBL Normal Curl Health Check"
+        ],
+        "alert_rules": []
+      },
+      "v2": {
+        "classification": "TN",
+        "raw_events": 0,
+        "raw_alerts": 0,
+        "rules": [],
+        "alert_rules": []
+      },
+      "default_alerts": {
+        "raw_alerts": 0,
+        "rules": []
+      }
+    },
+    {
+      "case_id": "N04",
+      "ground_truth": "benign",
+      "description": "Authorized administrator inspects environment",
+      "expected_baseline": "FP",
+      "expected_v2": "TN",
+      "start_ns": 1794303843064057957,
+      "end_ns": 1794303843281604134,
+      "exit_code": 0,
+      "pod": "backend-675ff9dbd8-vh4sm",
+      "container": "backend",
+      "pod_uid": "63db7a31-c8b1-45fe-bf3c-fa4bf40404b4",
+      "restart_count": 0,
+      "container_id": "0ab08a11ddcbc85f53f9488365b301507b248845ae1ad710be33c691b66817b5",
+      "baseline": {
+        "classification": "FP",
+        "raw_events": 1,
+        "raw_alerts": 1,
+        "rules": [
+          "PBL OpenMetadata Environment Discovery"
+        ],
+        "alert_rules": [
+          "PBL OpenMetadata Environment Discovery"
+        ]
+      },
+      "v2": {
+        "classification": "TN",
+        "raw_events": 1,
+        "raw_alerts": 0,
+        "rules": [
+          "PBL V2 Environment Inspection"
+        ],
+        "alert_rules": []
+      },
+      "default_alerts": {
+        "raw_alerts": 0,
+        "rules": []
+      }
+    },
+    {
+      "case_id": "N05",
+      "ground_truth": "benign",
+      "description": "Print a path string without executing a payload",
+      "expected_baseline": "FP",
+      "expected_v2": "TN",
+      "start_ns": 1794303844305864117,
+      "end_ns": 1794303844515557668,
+      "exit_code": 0,
+      "pod": "frontend-8686cd79f6-5qw4w",
+      "container": "frontend",
+      "pod_uid": "fc45dea3-6a18-4bd2-a03c-ed3c63701c10",
+      "restart_count": 0,
+      "container_id": "89e42b50817b971340b61919d2104165a9bf9f81946ef4393b9a5bb211ee3bf1",
+      "baseline": {
+        "classification": "FP",
+        "raw_events": 1,
+        "raw_alerts": 1,
+        "rules": [
+          "PBL OpenMetadata Payload Execution"
+        ],
+        "alert_rules": [
+          "PBL OpenMetadata Payload Execution"
+        ]
+      },
+      "v2": {
+        "classification": "TN",
+        "raw_events": 0,
+        "raw_alerts": 0,
+        "rules": [],
+        "alert_rules": []
+      },
+      "default_alerts": {
+        "raw_alerts": 0,
+        "rules": []
+      }
+    },
+    {
+      "case_id": "N06",
+      "ground_truth": "benign",
+      "description": "Authorized maintenance script in /tmp",
+      "expected_baseline": "TN",
+      "expected_v2": "FP",
+      "start_ns": 1794303845540463215,
+      "end_ns": 1794303845753035690,
+      "exit_code": 0,
+      "pod": "frontend-8686cd79f6-5qw4w",
+      "container": "frontend",
+      "pod_uid": "fc45dea3-6a18-4bd2-a03c-ed3c63701c10",
+      "restart_count": 0,
+      "container_id": "89e42b50817b971340b61919d2104165a9bf9f81946ef4393b9a5bb211ee3bf1",
+      "baseline": {
+        "classification": "TN",
+        "raw_events": 0,
+        "raw_alerts": 0,
+        "rules": [],
+        "alert_rules": []
+      },
+      "v2": {
+        "classification": "FP",
+        "raw_events": 1,
+        "raw_alerts": 1,
+        "rules": [
+          "PBL V2 Temporary Program Execution"
+        ],
+        "alert_rules": [
+          "PBL V2 Temporary Program Execution"
+        ]
+      },
+      "default_alerts": {
+        "raw_alerts": 0,
+        "rules": []
+      }
+    },
+    {
+      "case_id": "N07",
+      "ground_truth": "benign",
+      "description": "Authorized maintenance reads the mounted token (discard contents)",
+      "expected_baseline": "FP",
+      "expected_v2": "FP",
+      "start_ns": 1794303846777890352,
+      "end_ns": 1794303846986256934,
+      "exit_code": 0,
+      "pod": "backend-675ff9dbd8-vh4sm",
+      "container": "backend",
+      "pod_uid": "63db7a31-c8b1-45fe-bf3c-fa4bf40404b4",
+      "restart_count": 0,
+      "container_id": "0ab08a11ddcbc85f53f9488365b301507b248845ae1ad710be33c691b66817b5",
+      "baseline": {
+        "classification": "FP",
+        "raw_events": 1,
+        "raw_alerts": 1,
+        "rules": [
+          "PBL OpenMetadata ServiceAccount Token Access"
+        ],
+        "alert_rules": [
+          "PBL OpenMetadata ServiceAccount Token Access"
+        ]
+      },
+      "v2": {
+        "classification": "FP",
+        "raw_events": 1,
+        "raw_alerts": 1,
+        "rules": [
+          "PBL V2 Sensitive File Open"
+        ],
+        "alert_rules": [
+          "PBL V2 Sensitive File Open"
+        ]
+      },
+      "default_alerts": {
+        "raw_alerts": 0,
+        "rules": []
+      }
+    },
+    {
+      "case_id": "A01",
+      "ground_truth": "attack",
+      "description": "Simulated environment and credential discovery",
+      "expected_baseline": "TP",
+      "expected_v2": "TP",
+      "start_ns": 1794303848011063901,
+      "end_ns": 1794303848222955195,
+      "exit_code": 0,
+      "pod": "backend-675ff9dbd8-vh4sm",
+      "container": "backend",
+      "pod_uid": "63db7a31-c8b1-45fe-bf3c-fa4bf40404b4",
+      "restart_count": 0,
+      "container_id": "0ab08a11ddcbc85f53f9488365b301507b248845ae1ad710be33c691b66817b5",
+      "baseline": {
+        "classification": "TP",
+        "raw_events": 2,
+        "raw_alerts": 2,
+        "rules": [
+          "PBL OpenMetadata Environment Discovery"
+        ],
+        "alert_rules": [
+          "PBL OpenMetadata Environment Discovery"
+        ]
+      },
+      "v2": {
+        "classification": "TP",
+        "raw_events": 2,
+        "raw_alerts": 1,
+        "rules": [
+          "PBL V2 Environment Inspection",
+          "PBL V2 Sensitive File Open"
+        ],
+        "alert_rules": [
+          "PBL V2 Sensitive File Open"
+        ]
+      },
+      "default_alerts": {
+        "raw_alerts": 0,
+        "rules": []
+      }
+    },
+    {
+      "case_id": "A02",
+      "ground_truth": "attack",
+      "description": "Read ServiceAccount token with cat (discard contents)",
+      "expected_baseline": "TP",
+      "expected_v2": "TP",
+      "start_ns": 1794303849248060114,
+      "end_ns": 1794303849458387698,
+      "exit_code": 0,
+      "pod": "backend-675ff9dbd8-vh4sm",
+      "container": "backend",
+      "pod_uid": "63db7a31-c8b1-45fe-bf3c-fa4bf40404b4",
+      "restart_count": 0,
+      "container_id": "0ab08a11ddcbc85f53f9488365b301507b248845ae1ad710be33c691b66817b5",
+      "baseline": {
+        "classification": "TP",
+        "raw_events": 1,
+        "raw_alerts": 1,
+        "rules": [
+          "PBL OpenMetadata ServiceAccount Token Access"
+        ],
+        "alert_rules": [
+          "PBL OpenMetadata ServiceAccount Token Access"
+        ]
+      },
+      "v2": {
+        "classification": "TP",
+        "raw_events": 1,
+        "raw_alerts": 1,
+        "rules": [
+          "PBL V2 Sensitive File Open"
+        ],
+        "alert_rules": [
+          "PBL V2 Sensitive File Open"
+        ]
+      },
+      "default_alerts": {
+        "raw_alerts": 0,
+        "rules": []
+      }
+    },
+    {
+      "case_id": "A03",
+      "ground_truth": "attack",
+      "description": "Read token with alternate reader head (discard contents)",
+      "expected_baseline": "FN",
+      "expected_v2": "TP",
+      "start_ns": 1794303850483662886,
+      "end_ns": 1794303850701522648,
+      "exit_code": 0,
+      "pod": "backend-675ff9dbd8-vh4sm",
+      "container": "backend",
+      "pod_uid": "63db7a31-c8b1-45fe-bf3c-fa4bf40404b4",
+      "restart_count": 0,
+      "container_id": "0ab08a11ddcbc85f53f9488365b301507b248845ae1ad710be33c691b66817b5",
+      "baseline": {
+        "classification": "FN",
+        "raw_events": 0,
+        "raw_alerts": 0,
+        "rules": [],
+        "alert_rules": []
+      },
+      "v2": {
+        "classification": "TP",
+        "raw_events": 1,
+        "raw_alerts": 1,
+        "rules": [
+          "PBL V2 Sensitive File Open"
+        ],
+        "alert_rules": [
+          "PBL V2 Sensitive File Open"
+        ]
+      },
+      "default_alerts": {
+        "raw_alerts": 0,
+        "rules": []
+      }
+    },
+    {
+      "case_id": "A04",
+      "ground_truth": "attack",
+      "description": "Read process environment with alternate reader head",
+      "expected_baseline": "FN",
+      "expected_v2": "TP",
+      "start_ns": 1794303851727697182,
+      "end_ns": 1794303851929516369,
+      "exit_code": 0,
+      "pod": "backend-675ff9dbd8-vh4sm",
+      "container": "backend",
+      "pod_uid": "63db7a31-c8b1-45fe-bf3c-fa4bf40404b4",
+      "restart_count": 0,
+      "container_id": "0ab08a11ddcbc85f53f9488365b301507b248845ae1ad710be33c691b66817b5",
+      "baseline": {
+        "classification": "FN",
+        "raw_events": 0,
+        "raw_alerts": 0,
+        "rules": [],
+        "alert_rules": []
+      },
+      "v2": {
+        "classification": "TP",
+        "raw_events": 1,
+        "raw_alerts": 1,
+        "rules": [
+          "PBL V2 Sensitive File Open"
+        ],
+        "alert_rules": [
+          "PBL V2 Sensitive File Open"
+        ]
+      },
+      "default_alerts": {
+        "raw_alerts": 0,
+        "rules": []
+      }
+    },
+    {
+      "case_id": "A05",
+      "ground_truth": "attack",
+      "description": "Execute original fixed-name safe payload marker",
+      "expected_baseline": "TP",
+      "expected_v2": "TP",
+      "start_ns": 1794303852954535227,
+      "end_ns": 1794303853177128399,
+      "exit_code": 0,
+      "pod": "frontend-8686cd79f6-5qw4w",
+      "container": "frontend",
+      "pod_uid": "fc45dea3-6a18-4bd2-a03c-ed3c63701c10",
+      "restart_count": 0,
+      "container_id": "89e42b50817b971340b61919d2104165a9bf9f81946ef4393b9a5bb211ee3bf1",
+      "baseline": {
+        "classification": "TP",
+        "raw_events": 2,
+        "raw_alerts": 2,
+        "rules": [
+          "PBL OpenMetadata Payload Execution"
+        ],
+        "alert_rules": [
+          "PBL OpenMetadata Payload Execution"
+        ]
+      },
+      "v2": {
+        "classification": "TP",
+        "raw_events": 1,
+        "raw_alerts": 1,
+        "rules": [
+          "PBL V2 Temporary Program Execution"
+        ],
+        "alert_rules": [
+          "PBL V2 Temporary Program Execution"
+        ]
+      },
+      "default_alerts": {
+        "raw_alerts": 0,
+        "rules": []
+      }
+    },
+    {
+      "case_id": "A06",
+      "ground_truth": "attack",
+      "description": "Execute a renamed safe payload marker in /tmp",
+      "expected_baseline": "FN",
+      "expected_v2": "TP",
+      "start_ns": 1794303854202982889,
+      "end_ns": 1794303854410556655,
+      "exit_code": 0,
+      "pod": "frontend-8686cd79f6-5qw4w",
+      "container": "frontend",
+      "pod_uid": "fc45dea3-6a18-4bd2-a03c-ed3c63701c10",
+      "restart_count": 0,
+      "container_id": "89e42b50817b971340b61919d2104165a9bf9f81946ef4393b9a5bb211ee3bf1",
+      "baseline": {
+        "classification": "FN",
+        "raw_events": 0,
+        "raw_alerts": 0,
+        "rules": [],
+        "alert_rules": []
+      },
+      "v2": {
+        "classification": "TP",
+        "raw_events": 1,
+        "raw_alerts": 1,
+        "rules": [
+          "PBL V2 Temporary Program Execution"
+        ],
+        "alert_rules": [
+          "PBL V2 Temporary Program Execution"
+        ]
+      },
+      "default_alerts": {
+        "raw_alerts": 0,
+        "rules": []
+      }
+    },
+    {
+      "case_id": "A07",
+      "ground_truth": "attack",
+      "description": "Source a renamed script using shell builtins only",
+      "expected_baseline": "FN",
+      "expected_v2": "FN",
+      "start_ns": 1794303855435463755,
+      "end_ns": 1794303855644673043,
+      "exit_code": 0,
+      "pod": "frontend-8686cd79f6-5qw4w",
+      "container": "frontend",
+      "pod_uid": "fc45dea3-6a18-4bd2-a03c-ed3c63701c10",
+      "restart_count": 0,
+      "container_id": "89e42b50817b971340b61919d2104165a9bf9f81946ef4393b9a5bb211ee3bf1",
+      "baseline": {
+        "classification": "FN",
+        "raw_events": 0,
+        "raw_alerts": 0,
+        "rules": [],
+        "alert_rules": []
+      },
+      "v2": {
+        "classification": "FN",
+        "raw_events": 0,
+        "raw_alerts": 0,
+        "rules": [],
+        "alert_rules": []
+      },
+      "default_alerts": {
+        "raw_alerts": 0,
+        "rules": []
+      }
+    },
+    {
+      "case_id": "A08",
+      "ground_truth": "attack",
+      "description": "Simulated attacker inspects only environment variables",
+      "expected_baseline": "TP",
+      "expected_v2": "FN",
+      "start_ns": 1794303856669798950,
+      "end_ns": 1794303856914648140,
+      "exit_code": 0,
+      "pod": "backend-675ff9dbd8-vh4sm",
+      "container": "backend",
+      "pod_uid": "63db7a31-c8b1-45fe-bf3c-fa4bf40404b4",
+      "restart_count": 0,
+      "container_id": "0ab08a11ddcbc85f53f9488365b301507b248845ae1ad710be33c691b66817b5",
+      "baseline": {
+        "classification": "TP",
+        "raw_events": 1,
+        "raw_alerts": 1,
+        "rules": [
+          "PBL OpenMetadata Environment Discovery"
+        ],
+        "alert_rules": [
+          "PBL OpenMetadata Environment Discovery"
+        ]
+      },
+      "v2": {
+        "classification": "FN",
+        "raw_events": 1,
+        "raw_alerts": 0,
+        "rules": [
+          "PBL V2 Environment Inspection"
+        ],
+        "alert_rules": []
+      },
+      "default_alerts": {
+        "raw_alerts": 0,
+        "rules": []
+      }
+    }
+  ]
+}

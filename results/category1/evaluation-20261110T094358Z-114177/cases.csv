@@ -1,0 +1,16 @@
+case,truth,description,exit_code,baseline_expected,baseline_observed,baseline_raw_alerts,v2_expected,v2_observed,v2_raw_alerts,default_raw_alerts
+N01,benign,Routine configuration reads,0,TN,TN,0,TN,TN,0,0
+N02,benign,Routine temporary text file operations,0,TN,TN,0,TN,TN,0,0
+N03,benign,Loopback HTTP health check,0,TN,TN,0,TN,TN,0,0
+N04,benign,Authorized administrator inspects environment,0,FP,FP,1,TN,TN,0,0
+N05,benign,Print a path string without executing a payload,0,FP,FP,1,TN,TN,0,0
+N06,benign,Authorized maintenance script in /tmp,0,TN,TN,0,FP,FP,1,0
+N07,benign,Authorized maintenance reads the mounted token (discard contents),0,FP,FP,1,FP,FP,1,0
+A01,attack,Simulated environment and credential discovery,0,TP,TP,2,TP,TP,1,0
+A02,attack,Read ServiceAccount token with cat (discard contents),0,TP,TP,1,TP,TP,1,0
+A03,attack,Read token with alternate reader head (discard contents),0,FN,FN,0,TP,TP,1,0
+A04,attack,Read process environment with alternate reader head,0,FN,FN,0,TP,TP,1,0
+A05,attack,Execute original fixed-name safe payload marker,0,TP,TP,2,TP,TP,1,0
+A06,attack,Execute a renamed safe payload marker in /tmp,0,FN,FN,0,TP,TP,1,0
+A07,attack,Source a renamed script using shell builtins only,0,FN,FN,0,FN,FN,0,0
+A08,attack,Simulated attacker inspects only environment variables,0,TP,TP,1,FN,FN,0,0

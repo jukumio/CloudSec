@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "namespace": "pbl-security",
+  "start_ns": 1794303839308062454,
+  "end_ns": 1794303857939984741,
+  "log_collection_complete": true,
+  "settle_seconds": 5,
+  "event_drop_metrics_checked": false,
+  "ground_truth_source": "controlled test-case intent"
+}
