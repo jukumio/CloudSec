@@ -91,6 +91,7 @@ Run all commands from the project root.
 See the category guides for live log commands:
 
 - [Category 1 - Falco](category1/README_EN.md)
+- [Category 1 custom implementation, evaluation and report](category1/custom/README_EN.md)
 - [Category 2 - Hubble](category2/README_EN.md)
 - [Category 3 - Audit Log](category3/README_EN.md)
 

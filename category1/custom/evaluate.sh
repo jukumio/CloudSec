@@ -3,7 +3,7 @@
 set -euo pipefail
 export PATH="${PATH}:/snap/bin"
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 NS="${NS:-pbl-security}"
 FALCO_NS="${FALCO_NS:-falco}"
 SETTLE_SECONDS="${SETTLE_SECONDS:-5}"
@@ -11,7 +11,7 @@ CASE_GAP_SECONDS="${CASE_GAP_SECONDS:-1}"
 
 if [[ "${1:-}" == "--help" ]]; then
   cat <<'HELP'
-Usage: bash category1/evaluate.sh
+Usage: bash category1/custom/evaluate.sh
 
 Requires an existing, healthy PBL cluster and kubectl, helm, python3.
 Runs 7 benign and 8 safe attack simulations in frontend/backend only.
@@ -49,8 +49,8 @@ repo, run = map(pathlib.Path, sys.argv[1:])
 snapshot = run / 'sources'
 snapshot.mkdir()
 files = []
-for relative in ('category1/evaluate.sh', 'category1/analyze_results.py',
-                 'category1/falco-values.yaml', 'category1/falco-values-v2.yaml'):
+for relative in ('category1/custom/evaluate.sh', 'category1/custom/analyze_results.py',
+                 'category1/falco-values.yaml', 'category1/custom/falco-values-v2.yaml'):
     source = repo / relative
     if not source.is_file():
         raise SystemExit(f'Missing evaluation source: {relative}')
@@ -274,5 +274,5 @@ with open(path, 'w') as output:
               output, indent=2)
     output.write('\n')
 PY
-python3 "${ROOT_DIR}/category1/analyze_results.py" "${RUN_DIR}"
+python3 "${ROOT_DIR}/category1/custom/analyze_results.py" "${RUN_DIR}"
 printf '\nEvaluation complete: %s/summary.md\n' "${RUN_DIR}"

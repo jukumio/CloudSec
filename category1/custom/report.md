@@ -2,9 +2,9 @@
 
 ## 1. 결론과 평가 범위
 
-정상 7개·공격 모사 8개의 통제 사례를 실제 실행하여 기존 규칙과 개선 규칙 V2를 비교했다. 사례 단위 관측 결과는 **기준선 TP 4 / TN 4 / FP 3 / FN 4**, **V2 TP 6 / TN 5 / FP 2 / FN 2**였다. 대체 읽기 도구와 변경된 payload 경로를 다루는 범위가 늘었으나, 정상 임시 스크립트의 경고와 `env` 단독 공격 탐색의 미탐이라는 절충점도 확인했다. [실제 실행 요약](evaluation-20261110T094358Z-114177/summary.md), [기계 판독 결과](evaluation-20261110T094358Z-114177/summary.json)
+정상 7개·공격 모사 8개의 통제 사례를 실제 실행하여 기존 규칙과 개선 규칙 V2를 비교했다. 사례 단위 관측 결과는 **기준선 TP 4 / TN 4 / FP 3 / FN 4**, **V2 TP 6 / TN 5 / FP 2 / FN 2**였다. 대체 읽기 도구와 변경된 payload 경로를 다루는 범위가 늘었으나, 정상 임시 스크립트의 경고와 `env` 단독 공격 탐색의 미탐이라는 절충점도 확인했다. [실제 실행 요약](../../results/category1/evaluation-20261110T094358Z-114177/summary.md), [기계 판독 결과](../../results/category1/evaluation-20261110T094358Z-114177/summary.json)
 
-별도의 초기 수집 파일 [falco-events.log](falco-events.log)에는 제공된 정상 스크립트 1개와 공격 모사 스크립트 3개에 대응하는 이벤트 13건이 있다. 이 초기 자료와 확장 평가 15개 사례는 합산하지 않는다. 초기 자료는 기본 동작 검증에, 확장 평가는 규칙의 오탐·미탐과 개선 효과 비교에 사용했다.
+별도의 초기 수집 파일 [falco-events.log](../../results/category1/falco-events.log)에는 제공된 정상 스크립트 1개와 공격 모사 스크립트 3개에 대응하는 이벤트 13건이 있다. 이 초기 자료와 확장 평가 15개 사례는 합산하지 않는다. 초기 자료는 기본 동작 검증에, 확장 평가는 규칙의 오탐·미탐과 개선 효과 비교에 사용했다.
 
 정상·비정상 정답은 통제 사례 작성자가 선언한 행위 의도이고, Falco가 악성 여부를 독립적으로 판정한 결과는 아니다. 15개 사례는 개발 중 구성한 소규모 평가 집합이며, 운영 환경의 탐지 정확도나 일반적인 오탐률을 입증하지 않는다.
 
@@ -23,7 +23,7 @@
   → 실행 시나리오, 실제 명령, 파일 경로, Pod 정보와 대조
 ```
 
-[설치 스크립트](../../install.sh)는 Falco를 배포하고 JSON 출력, `rule_matching=all`, [커스텀 규칙 파일](../../category1/falco-values.yaml)을 설정한다. `rule_matching=all`에서는 기본 규칙과 커스텀 규칙이 함께 결과를 낼 수 있다. 초기 `falco-events.log`는 `PBL_EVENT`에 해당하는 실습 규칙 출력이다. 확장 평가는 전체 Falco 원본 로그를 보존하고 기준선·V2·기타 규칙을 나누어 분석했다.
+[설치 스크립트](../../install.sh)는 Falco를 배포하고 JSON 출력, `rule_matching=all`, [커스텀 규칙 파일](../falco-values.yaml)을 설정한다. `rule_matching=all`에서는 기본 규칙과 커스텀 규칙이 함께 결과를 낼 수 있다. 초기 `falco-events.log`는 `PBL_EVENT`에 해당하는 실습 규칙 출력이다. 확장 평가는 전체 Falco 원본 로그를 보존하고 기준선·V2·기타 규칙을 나누어 분석했다.
 
 | 시나리오 | 규칙이 실제로 확인하는 조건 | 출력 action | 우선순위 |
 | --- | --- | --- | --- |
@@ -38,7 +38,7 @@
 
 ## 3. 초기 13개 이벤트: 수집 결과와 판단 근거
 
-측정 원본은 이 폴더의 [falco-events.log](falco-events.log)이다. 로그 시각은 `2026-11-10T09:24:00.020436134Z`부터 `09:24:05.622503443Z`까지이며, 한국 시각으로 2026-11-10 18:24:00~18:24:05이다. 접두사의 Falco Pod 이름은 **로그를 생성한 센서**, JSON의 `k8s.pod.name`은 **행위가 발생한 워크로드 Pod**를 뜻한다.
+측정 원본은 `results/category1/`의 [falco-events.log](../../results/category1/falco-events.log)이다. 로그 시각은 `2026-11-10T09:24:00.020436134Z`부터 `09:24:05.622503443Z`까지이며, 한국 시각으로 2026-11-10 18:24:00~18:24:05이다. 접두사의 Falco Pod 이름은 **로그를 생성한 센서**, JSON의 `k8s.pod.name`은 **행위가 발생한 워크로드 Pod**를 뜻한다.
 
 | 원본 줄 | 시나리오 / action | 실제 관찰 근거 | 이벤트 수 | 해석 |
 | --- | --- | --- | ---: | --- |
@@ -52,7 +52,7 @@
 
 정상 행위의 주체는 `frontend-8686cd79f6-5qw4w`의 `frontend` 및 `curl-client` 컨테이너이고, 탐색·token 접근의 주체는 `backend-675ff9dbd8-vh4sm`의 `backend` 컨테이너이다. 메타데이터가 채워진 이벤트의 namespace는 `pbl-security`이다.
 
-[abnormal_1.sh](../../category1/abnormal_1.sh)의 credential 경로 반복문은 경로가 존재하면 `ls -l`로 확인하는 작업이다. 원본에서 확인한 두 탐지 근거를 AWS credential, SSH key, `/etc/shadow`의 실제 내용 읽기 성공으로 확대해서 설명하지 않는다. [abnormal_2.sh](../../category1/abnormal_2.sh)의 token 값은 `/dev/null`로 보내며, 로그에는 경로와 명령만 나타난다. 파일 열기 조건에 맞았다는 기록만으로 token 탈취·외부 전송이나 Kubernetes API 악용까지 입증되는 것은 아니다.
+[abnormal_1.sh](../abnormal_1.sh)의 credential 경로 반복문은 경로가 존재하면 `ls -l`로 확인하는 작업이다. 원본에서 확인한 두 탐지 근거를 AWS credential, SSH key, `/etc/shadow`의 실제 내용 읽기 성공으로 확대해서 설명하지 않는다. [abnormal_2.sh](../abnormal_2.sh)의 token 값은 `/dev/null`로 보내며, 로그에는 경로와 명령만 나타난다. 파일 열기 조건에 맞았다는 기록만으로 token 탈취·외부 전송이나 Kubernetes API 악용까지 입증되는 것은 아니다.
 
 ## 4. TP / TN / FP / FN 평가 방법과 초기 사례 대응
 
@@ -107,7 +107,7 @@
 
 ## 7. 개선 규칙 설계와 확장 평가 결과
 
-기존 규칙을 기준선으로 보존하고, [falco-values-v2.yaml](../../category1/falco-values-v2.yaml)에 개선 규칙을 분리했다. 기준선과 개선 규칙이 같은 행위를 동시에 관찰하도록 실제 배포한 뒤 15개 사례를 실행했다. 7.1절은 설계 의도, 7.2절은 평가 방법, 7.3절은 실제 관측 결과를 구분하여 기술한다.
+기존 규칙을 기준선으로 보존하고, [falco-values-v2.yaml](falco-values-v2.yaml)에 개선 규칙을 분리했다. 기준선과 개선 규칙이 같은 행위를 동시에 관찰하도록 실제 배포한 뒤 15개 사례를 실행했다. 7.1절은 설계 의도, 7.2절은 평가 방법, 7.3절은 실제 관측 결과를 구분하여 기술한다.
 
 ### 7.1 V2 설계와 예상 절충점
 
@@ -123,7 +123,7 @@ V2 출력에는 실제 event 시각·종류·성공 결과·프로세스와 부�
 
 ### 7.2 확장 평가 프로토콜
 
-[evaluate.sh](../../category1/evaluate.sh)는 정상 7개·공격 모사 8개의 통제 사례를 실행하고, 각 사례의 시간 구간·대상 컨테이너 ID·의도상 정답·종료 코드와 원본 로그를 실행별 폴더에 보존한다. [analyze_results.py](../../category1/analyze_results.py)는 규칙 코드에서 예상한 결과와 실제 로그 판정을 분리한다. 본 보고서의 지표는 예상값이 아니라 실제 실행의 [summary.json](evaluation-20261110T094358Z-114177/summary.json)과 [cases.csv](evaluation-20261110T094358Z-114177/cases.csv)를 사용했다.
+[evaluate.sh](evaluate.sh)는 정상 7개·공격 모사 8개의 통제 사례를 실행하고, 각 사례의 시간 구간·대상 컨테이너 ID·의도상 정답·종료 코드와 원본 로그를 실행별 폴더에 보존한다. [analyze_results.py](analyze_results.py)는 규칙 코드에서 예상한 결과와 실제 로그 판정을 분리한다. 본 보고서의 지표는 예상값이 아니라 실제 실행의 [summary.json](../../results/category1/evaluation-20261110T094358Z-114177/summary.json)과 [cases.csv](../../results/category1/evaluation-20261110T094358Z-114177/cases.csv)를 사용했다.
 
 중요한 대조 사례는 동일한 명령에 다른 의도상 정답을 부여한 정상 환경 점검 / 공격자 환경 탐색, 승인된 token 점검 / 공격자 token 읽기이다. 이 사례들은 관찰된 명령과 파일 경로만으로 행위자의 승인 여부·의도를 완전히 구분할 수 없음을 드러내기 위해 포함했다. 승인된 임시 스크립트도 정상 정답으로 유지하여 정책 경고가 곧 공격 정답이 되지 않게 했다.
 
@@ -140,9 +140,9 @@ V2 출력에는 실제 event 시각·종류·성공 결과·프로세스와 부�
 
 ### 7.3 실제 실행 환경과 수집 확인
 
-확장 평가의 실행 ID는 `evaluation-20261110T094358Z-114177`이다. 실행 구간은 UTC 2026-11-10 09:43:59~09:44:17, 한국 시각 18:43:59~18:44:17이다. 실제 설정과 수집 근거는 해당 폴더의 [run.json](evaluation-20261110T094358Z-114177/run.json), [active-helm-values.json](evaluation-20261110T094358Z-114177/active-helm-values.json), [cases.jsonl](evaluation-20261110T094358Z-114177/cases.jsonl)에 있다.
+확장 평가의 실행 ID는 `evaluation-20261110T094358Z-114177`이다. 실행 구간은 UTC 2026-11-10 09:43:59~09:44:17, 한국 시각 18:43:59~18:44:17이다. 실제 설정과 수집 근거는 해당 폴더의 [run.json](../../results/category1/evaluation-20261110T094358Z-114177/run.json), [active-helm-values.json](../../results/category1/evaluation-20261110T094358Z-114177/active-helm-values.json), [cases.jsonl](../../results/category1/evaluation-20261110T094358Z-114177/cases.jsonl)에 있다.
 
-배포 기록은 chart `falco-9.2.2`, Falco `0.45.2`, Helm revision `2`, 상태 `deployed`를 나타낸다. 기준선과 V2가 모두 활성화되어 있으며 두 종류의 이벤트가 실제 수집됐다. [배포 후 release 기록](deployment-20261110T093330Z-76792/release-after.json), [배포 후 values](deployment-20261110T093330Z-76792/values-after.yaml)
+배포 기록은 chart `falco-9.2.2`, Falco `0.45.2`, Helm revision `2`, 상태 `deployed`를 나타낸다. 기준선과 V2가 모두 활성화되어 있으며 두 종류의 이벤트가 실제 수집됐다. [배포 후 release 기록](../../results/category1/deployment-20261110T093330Z-76792/release-after.json), [배포 후 values](../../results/category1/deployment-20261110T093330Z-76792/values-after.yaml)
 
 현재 배포는 비교 실험을 위해 두 규칙 집합을 함께 활성화한 상태다. 아래 지표는 기준선과 V2의 경고를 각각 분리해 계산했으며, 두 집합의 모든 경고를 합친 전체 시스템의 지표가 아니다. 실제 운영에 적용하려면 채택할 규칙 집합과 기본 규칙의 경고 처리 정책을 별도로 정해야 한다.
 
@@ -156,11 +156,11 @@ V2 출력에는 실제 event 시각·종류·성공 결과·프로세스와 부�
 | 대상 workload Pod·컨테이너 ID·재시작 수의 전후 안정성 | true |
 | kernel syscall event drop 지표 측정 | **false: 측정하지 않음** |
 
-전체 아카이브에는 JSON 이벤트 217건이 있다. 기준선은 Informational 7건과 Warning 9건, V2는 Informational 3건과 Warning 8건이었다. 기타·기본 규칙으로 분류한 Notice 이벤트도 190건 보존되어 있다. 사례별 대상 컨테이너·시간 구간에 해당하는 기타·기본 규칙의 **Warning 이상** 집계는 모두 0건이지만, 이를 “Falco의 다른 이벤트가 전혀 없었다”는 의미로 해석하지 않는다. [센서별 전체 원본 로그](evaluation-20261110T094358Z-114177/logs), [파싱한 이벤트](evaluation-20261110T094358Z-114177/events.jsonl)
+전체 아카이브에는 JSON 이벤트 217건이 있다. 기준선은 Informational 7건과 Warning 9건, V2는 Informational 3건과 Warning 8건이었다. 기타·기본 규칙으로 분류한 Notice 이벤트도 190건 보존되어 있다. 사례별 대상 컨테이너·시간 구간에 해당하는 기타·기본 규칙의 **Warning 이상** 집계는 모두 0건이지만, 이를 “Falco의 다른 이벤트가 전혀 없었다”는 의미로 해석하지 않는다. [센서별 전체 원본 로그](../../results/category1/evaluation-20261110T094358Z-114177/logs), [파싱한 이벤트](../../results/category1/evaluation-20261110T094358Z-114177/events.jsonl)
 
 ### 7.4 실제 15개 사례의 판정과 표본 지표
 
-다음 판정은 [cases.csv](evaluation-20261110T094358Z-114177/cases.csv)의 `observed` 열에서 가져왔다. 코드에 미리 기입한 `expected` 열과 혼합하지 않았다.
+다음 판정은 [cases.csv](../../results/category1/evaluation-20261110T094358Z-114177/cases.csv)의 `observed` 열에서 가져왔다. 코드에 미리 기입한 `expected` 열과 혼합하지 않았다.
 
 | 사례 | 의도상 정답 | 실제 시험 행위 | 기준선 관측 | V2 관측 |
 | --- | --- | --- | --- | --- |
@@ -209,14 +209,14 @@ kubectl logs -n falco -l app.kubernetes.io/name=falco \
   | grep -E 'PBL(_V2)?_EVENT'
 ```
 
-위 명령은 간단 확인용 예시이며, 초기 13건 원본이 이 옵션으로 수집됐다고 단정하지 않는다. 원본 파일을 덮어쓰지 않고 별도 실행 결과로 저장해야 비교 근거를 유지할 수 있다. 전체 사례 재현에는 `bash category1/evaluate.sh`를 사용하며, 분석만 다시 수행하려면 다음과 같이 실행한다.
+위 명령은 간단 확인용 예시이며, 초기 13건 원본이 이 옵션으로 수집됐다고 단정하지 않는다. 원본 파일을 덮어쓰지 않고 별도 실행 결과로 저장해야 비교 근거를 유지할 수 있다. 전체 사례 재현에는 `bash category1/custom/evaluate.sh`를 사용하며, 분석만 다시 수행하려면 다음과 같이 실행한다.
 
 ```bash
-python3 category1/analyze_results.py \
+python3 category1/custom/analyze_results.py \
   results/category1/evaluation-20261110T094358Z-114177
 ```
 
-[apply-v2.sh](../../category1/apply-v2.sh)는 기존 chart 버전을 유지하고 `--reuse-values`로 커스텀 규칙을 추가하며, 배포 전후 values와 revision을 별도 폴더에 기록한다. 이번 배포 전 revision은 1이다. V2를 적용하기 전 설정으로 되돌려야 할 때 사용할 명령은 다음과 같다. 이 보고서 작성 과정에서 복원 명령을 실행하지는 않았다.
+[apply-v2.sh](apply-v2.sh)는 기존 chart 버전을 유지하고 `--reuse-values`로 커스텀 규칙을 추가하며, 배포 전후 values와 revision을 별도 폴더에 기록한다. 이번 배포 전 revision은 1이다. V2를 적용하기 전 설정으로 되돌려야 할 때 사용할 명령은 다음과 같다. 이 보고서 작성 과정에서 복원 명령을 실행하지는 않았다.
 
 ```bash
 helm rollback falco 1 --namespace falco --wait --timeout 10m
@@ -224,14 +224,14 @@ helm rollback falco 1 --namespace falco --wait --timeout 10m
 
 ## 8. 재현 자료
 
-- 초기 측정 원본: [제공된 스크립트 실행의 전체 13개 이벤트](falco-events.log)
-- 확장 평가: [15개 사례 결과와 사례별 근거](evaluation-20261110T094358Z-114177/summary.md), [summary.json](evaluation-20261110T094358Z-114177/summary.json), [cases.csv](evaluation-20261110T094358Z-114177/cases.csv)
-- 확장 평가 원본: [실행 정답·시간·종료 코드](evaluation-20261110T094358Z-114177/cases.jsonl), [센서별 로그](evaluation-20261110T094358Z-114177/logs), [실행별 명령 출력](evaluation-20261110T094358Z-114177/commands)
-- 소스 보존: [평가 소스 사본](evaluation-20261110T094358Z-114177/sources), [SHA256와 보존 시점](evaluation-20261110T094358Z-114177/sources/provenance.json). 이번 사본은 평가 완료 후 보존했다고 표시했다. 평가 당시 실제 배포 규칙의 근거는 `active-helm-values.json`이다. 이후 실행기는 사례 실행 전에 소스 사본과 해시를 자동 보존한다.
-- 기준선 규칙: [category1/falco-values.yaml](../../category1/falco-values.yaml)
-- 정상 기준선: [normal.sh](../../category1/normal.sh)
-- 공격 모사: [환경 탐색](../../category1/abnormal_1.sh), [token 접근](../../category1/abnormal_2.sh), [payload shell 실행](../../category1/abnormal_3.sh)
+- 초기 측정 원본: [제공된 스크립트 실행의 전체 13개 이벤트](../../results/category1/falco-events.log)
+- 확장 평가: [15개 사례 결과와 사례별 근거](../../results/category1/evaluation-20261110T094358Z-114177/summary.md), [summary.json](../../results/category1/evaluation-20261110T094358Z-114177/summary.json), [cases.csv](../../results/category1/evaluation-20261110T094358Z-114177/cases.csv)
+- 확장 평가 원본: [실행 정답·시간·종료 코드](../../results/category1/evaluation-20261110T094358Z-114177/cases.jsonl), [센서별 로그](../../results/category1/evaluation-20261110T094358Z-114177/logs), [실행별 명령 출력](../../results/category1/evaluation-20261110T094358Z-114177/commands)
+- 소스 보존: [평가 소스 사본](../../results/category1/evaluation-20261110T094358Z-114177/sources), [SHA256와 보존 시점](../../results/category1/evaluation-20261110T094358Z-114177/sources/provenance.json). 이번 사본은 평가 완료 후 보존했다고 표시했다. 평가 당시 실제 배포 규칙의 근거는 `active-helm-values.json`이다. 이후 실행기는 사례 실행 전에 소스 사본과 해시를 자동 보존한다.
+- 기준선 규칙: [category1/falco-values.yaml](../falco-values.yaml)
+- 정상 기준선: [normal.sh](../normal.sh)
+- 공격 모사: [환경 탐색](../abnormal_1.sh), [token 접근](../abnormal_2.sh), [payload shell 실행](../abnormal_3.sh)
 - 설치 설정: [install.sh](../../install.sh)
-- 개선·평가 도구: [V2 규칙](../../category1/falco-values-v2.yaml), [배포 스크립트](../../category1/apply-v2.sh), [실험 실행기](../../category1/evaluate.sh), [분석기](../../category1/analyze_results.py)
-- 배포 근거: [초기 release](deployment-20261110T093330Z-76792/release-before.json), [배포 후 release](deployment-20261110T093330Z-76792/release-after.json), [배포 후 values](deployment-20261110T093330Z-76792/values-after.yaml)
-- 프로젝트의 사전 로그 예시는 [category1/logs](../../category1/logs)에 있다. 이 보고서의 초기 13건 집계는 `results/category1/falco-events.log`, 확장 15개 사례 지표는 위 실행별 폴더를 사용했다. 사전 예시나 일부를 붙여 넣은 첨부를 측정 자료에 합산하지 않았다.
+- 개선·평가 도구: [V2 규칙](falco-values-v2.yaml), [배포 스크립트](apply-v2.sh), [실험 실행기](evaluate.sh), [분석기](analyze_results.py)
+- 배포 근거: [초기 release](../../results/category1/deployment-20261110T093330Z-76792/release-before.json), [배포 후 release](../../results/category1/deployment-20261110T093330Z-76792/release-after.json), [배포 후 values](../../results/category1/deployment-20261110T093330Z-76792/values-after.yaml)
+- 프로젝트의 사전 로그 예시는 [category1/logs](../logs)에 있다. 이 보고서의 초기 13건 집계는 `results/category1/falco-events.log`, 확장 15개 사례 지표는 위 실행별 폴더를 사용했다. 사전 예시나 일부를 붙여 넣은 첨부를 측정 자료에 합산하지 않았다.

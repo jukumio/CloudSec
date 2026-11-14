@@ -67,6 +67,7 @@ kubectl get pods -A
 로그를 실시간으로 보는 방법은 각 문서를 따릅니다.
 
 - [Category 1 - Falco](category1/README.md)
+- [Category 1 사용자 구현·평가·보고서](category1/custom/README.md)
 - [Category 2 - Hubble](category2/README.md)
 - [Category 3 - Audit Log](category3/README.md)
 

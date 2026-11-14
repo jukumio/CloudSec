@@ -4,7 +4,7 @@ set -euo pipefail
 # WSL non-login shells do not always inherit snap's command directory.
 export PATH="${PATH}:/snap/bin"
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 EXPECTED_CONTEXT="${EXPECTED_CONTEXT:-kind-pbl-security}"
 CURRENT_CONTEXT="$(kubectl config current-context)"
 if [[ "${CURRENT_CONTEXT}" != "${EXPECTED_CONTEXT}" ]]; then
@@ -36,17 +36,17 @@ fi
 
 helm get values falco --namespace falco --output yaml >"${RUN_DIR}/values-before.yaml"
 helm history falco --namespace falco --output json >"${RUN_DIR}/history-before.json"
-cp "${ROOT_DIR}/category1/falco-values-v2.yaml" "${RUN_DIR}/falco-values-v2.yaml"
+cp "${ROOT_DIR}/category1/custom/falco-values-v2.yaml" "${RUN_DIR}/falco-values-v2.yaml"
 
 # Render first, keep the installed chart version, and roll back on failed rollout.
 # The supplemental rules use a separate customRules map key; baseline rules remain.
 helm upgrade falco falcosecurity/falco --namespace falco \
   --version "${CHART_VERSION}" --reuse-values \
-  --values "${ROOT_DIR}/category1/falco-values-v2.yaml" \
+  --values "${ROOT_DIR}/category1/custom/falco-values-v2.yaml" \
   --dry-run >"${RUN_DIR}/helm-dry-run.txt"
 helm upgrade falco falcosecurity/falco --namespace falco \
   --version "${CHART_VERSION}" --reuse-values \
-  --values "${ROOT_DIR}/category1/falco-values-v2.yaml" \
+  --values "${ROOT_DIR}/category1/custom/falco-values-v2.yaml" \
   --atomic --wait --timeout 10m | tee "${RUN_DIR}/helm-upgrade.txt"
 kubectl rollout status daemonset/falco --namespace falco --timeout=10m
 helm list --namespace falco --filter '^falco$' --output json >"${RUN_DIR}/release-after.json"
